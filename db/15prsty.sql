@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 16, 2019 at 05:01 AM
+-- Generation Time: Jan 17, 2019 at 03:57 AM
 -- Server version: 10.1.31-MariaDB
 -- PHP Version: 7.2.4
 
@@ -62,13 +62,13 @@ CREATE TABLE `menu` (
 --
 
 INSERT INTO `menu` (`ID`, `MENU_NAME`, `PERMALINK`, `MENU_ICON`, `MENU_ORDER`, `STATUS`, `CREATE_DATE`, `UPDATE_DATE`, `MENU_ID`) VALUES
-(1, 'Setup Menu', '#', 'bars', '01', '1', '2019-01-08 15:51:57', '2019-01-08 16:01:06', NULL),
-(2, 'User & Role', '#', 'users-cog', '02', '1', '2019-01-08 15:52:58', '2019-01-08 16:01:21', NULL),
-(3, 'Application Data', 'app_data', 'cogs', '03', '1', '2019-01-08 15:54:30', '2019-01-08 16:02:37', NULL),
-(4, 'List Menu', 'menu', 'bars', '0101', '1', '2019-01-08 15:55:15', '2019-01-08 15:55:15', 1),
-(5, 'Assign Menu', 'assignmenu', 'bar', '0102', '1', '2019-01-08 15:56:23', '2019-01-08 15:56:39', 1),
-(6, 'List User', 'user', '', '0201', '1', '2019-01-08 15:57:31', '2019-01-08 15:57:31', 2),
-(7, 'List Role', 'role', '', '0202', '1', '2019-01-08 15:57:57', '2019-01-08 15:57:57', 2);
+(1, 'Setup Menu', '#', 'bars', '11', '1', '2019-01-08 15:51:57', '2019-01-17 09:56:06', NULL),
+(2, 'User & Role', '#', 'users-cog', '12', '1', '2019-01-08 15:52:58', '2019-01-17 09:56:25', NULL),
+(3, 'Application Data', 'app_data', 'cogs', '13', '1', '2019-01-08 15:54:30', '2019-01-17 09:56:38', NULL),
+(4, 'List Menu', 'menu', 'bars', '1101', '1', '2019-01-08 15:55:15', '2019-01-17 09:56:13', 1),
+(5, 'Assign Menu', 'assignmenu', 'bar', '1102', '1', '2019-01-08 15:56:23', '2019-01-17 09:56:18', 1),
+(6, 'List User', 'user', '', '1201', '1', '2019-01-08 15:57:31', '2019-01-17 09:56:31', 2),
+(7, 'List Role', 'role', '', '1202', '1', '2019-01-08 15:57:57', '2019-01-17 09:56:34', 2);
 
 -- --------------------------------------------------------
 
@@ -210,7 +210,7 @@ ALTER TABLE `user_info`
 -- AUTO_INCREMENT for table `app_data`
 --
 ALTER TABLE `app_data`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `menu`
