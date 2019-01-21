@@ -14,8 +14,13 @@ class User extends CI_Controller {
 		$this->load->model('user_model');
 		$this->load->model('user_info_model');
 		$this->load->model('menu_model');
-		$this->data['menu'] = $this->menu_model->get_menu($this->session->userdata('ROLE_ID'));
-		$this->data['sub_menu'] = $this->menu_model->get_sub_menu($this->session->userdata('ROLE_ID'));	
+		if(isset($this->session->userdata['is_logged_in'])){
+			$this->data['menu'] = $this->menu_model->get_menu($this->session->userdata('ROLE_ID'));
+			$this->data['sub_menu'] = $this->menu_model->get_sub_menu($this->session->userdata('ROLE_ID'));
+		}else{
+			$this->data['menu'] = $this->menu_model->get_menu($this->menu_model->get_guest_id('guest'));
+			$this->data['sub_menu'] = $this->menu_model->get_sub_menu($this->menu_model->get_guest_id('guest'));			
+		}
 		$this->load->model('app_data_model');		
 		$this->data['app_data'] = $this->app_data_model->get();			
 		$this->data['error'] = array();
