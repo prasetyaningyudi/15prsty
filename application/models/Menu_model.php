@@ -5,6 +5,7 @@ class Menu_model extends CI_Model {
 	
 	private $_table1 = "menu";
 	private $_table2 = "role_menu";
+	private $_table3 = "role";	
 
     public function __construct(){
 		parent::__construct();
@@ -62,6 +63,22 @@ class Menu_model extends CI_Model {
 		$query = $this->db->query($sql);
 		$result = $query->result();
 		return $result;		
+	}
+
+	public function get_guest_id($filter){
+		$sql = "SELECT * FROM " . $this->_table3;
+		$sql .= " WHERE ROLE_NAME = '".$filter."' ";
+		//var_dump($sql);die;		
+		$query = $this->db->query($sql);
+		$result = $query->result();
+		$id = 0;
+		if (!empty($result)) {
+			foreach($result as $value){
+				$id = $value->ID;
+			}
+		}
+		//var_dump($id);
+		return $id;		
 	}	
 	
 	public function insert($data){
