@@ -1,3 +1,4 @@
+
 <?php
 
 /**
@@ -7,9 +8,9 @@
  * Don't Edit Except By Me
  */
 
-include_once("mpdf60/mpdf.php");
+include_once("mpdf60/Mpdf.php");
 
-class GeneratePDFCostum {
+class Generatepdf {
 	// Private Variable
 	private $mpdf;
 	private $_content;
@@ -33,20 +34,22 @@ class GeneratePDFCostum {
 	 //$df = disable text filter di cetakan (true or false)
 	 //$dh = disable kop surat di cetakan (true or false or blank)
 	 //$fs = ukuran font, (string) example '10'
-	public function __construct($content=null,$tt1=null,$tt2=null,$tb1=null,$tb2=null, $df= null, $dh=null, $fs=null){
+	public function __construct($content=null){
 		//error_reporting(E_ALL);
 		//ini_set('display_errors', 'On');
-		$this->_content = $content;
-		$this->_text_top_1 = $tt1;
-		$this->_text_top_2 = $tt2;
-		$this->_text_bottom_1 = $tb1;
-		$this->_text_bottom_2 = $tb2;
-		$this->_disable_filter = $df;
-		$this->_disable_header = $dh;
+		$this->_content = $content[0];
+		//var_dump($this->_content);die;
+		$this->_text_top_1 = $content[1];
+		$this->_text_top_2 = $content[2];
+		$this->_text_bottom_1 = $content[3];
+		$this->_text_bottom_2 = $content[4];
+		$this->_disable_filter = $content[5];
+		$this->_disable_header = $content[6];
+		//var_dump($this->_disable_header);die;
 		if($fs === null){
 			$this->_font_size = '12';
 		}else{
-			$this->_font_size = $fs;
+			$this->_font_size = $content[7];
 		}
 		ob_clean();
 	}
@@ -147,7 +150,7 @@ EOL;
 
 	public function set_pdf_footer(){
 		$html = '<div style="font-family:Arial;font-size:10px;text-align:center;padding-top: 5mm;">hal : {PAGENO} dari {nb} halaman</div>'.
-				'<div style="font-family:Arial;font-size:9px;text-align:right">tanggal cetak : '.date("d-m-y H:i:s").' oleh : '.Session::get('kd_satker').'</div>';
+				'<div style="font-family:Arial;font-size:9px;text-align:right">tanggal cetak : '.date("d-m-y H:i:s").' oleh : </div>';
 		return $html;
 	}
 
@@ -301,7 +304,7 @@ EOL;
 		$filter_menu='';
 		if(isset($this->_content->data->filters) != null){
 			$array_url = array();
-			foreach($this->_content->data->filters->fields as $filters){
+			foreach($this->_content->data->filters as $filters){
 				if($filters->type=="select"){
 					if($filters->value!=NULL AND $filters->value!='NULL'){
 						if(isset($filters->options) != null){

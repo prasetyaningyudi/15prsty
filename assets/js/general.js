@@ -1,6 +1,8 @@
 var the_data;
 var targeturl;
 var fromfilter;
+var frompaging;
+var current_offset;
 var globallimit;
 var globalform;
 var field_data;
@@ -35,26 +37,6 @@ $('.button-add').on('click',function(){
 	});
 	return true;
 });
-
-//saving record
-/* $('#button-save').on('click',function(){
-	var datainput = generate_json_from_field("#form-add");
-	//console.log(datainput);
-	$.ajax({
-		type : "POST",
-		url  : targeturl+'/insert',
-		dataType : "JSON",
-		data : JSON.parse(datainput),
-		success: function(data){
-			$('#modal-add').modal('hide');
-			get_data(data);
-			$("#form-add").trigger("reset");
-			initiation(targeturl);			
-		}
-	});
-
-	return false;
-}); */
 
 $('#button-save').on('click',function(e){
 	//e.preventDefault();
@@ -270,7 +252,7 @@ function set_pagination(){
 }
 
 $('.paging').on('click','a.page-link',function(){
-	var current_offset = ($(this).attr('numb') - 1) * globallimit;
+	current_offset = ($(this).attr('numb') - 1) * globallimit;
 	if(fromfilter == false){
 		var datainput='{';
 		datainput += '"offset":'+current_offset+',';
@@ -284,6 +266,7 @@ $('.paging').on('click','a.page-link',function(){
 		datainput += ',"offset":"'+current_offset+'"}';
 		//console.log(datainput);
 	}
+	frompaging = true;
 	$.ajax({
 		type : "POST",
 		url  : targeturl+'/list',
@@ -295,6 +278,77 @@ $('.paging').on('click','a.page-link',function(){
 	});
 	return false;
 });
+
+function expected_output(type){
+	if(type == 'xls'){
+		console.log('xls generate');
+	}else if(type == 'pdf'){
+		console.log('pdf generate');
+	}
+	if(fromfilter == false){
+		var datainput='';
+		datainput += 'submit=submit';
+	}else{
+		var datainput = generate_param_from_field("#form-filter");
+	}
+	if(frompaging == true){
+		datainput += '&offset='+current_offset;
+	}
+	
+	if(type == 'xls'){
+		datainput += '&expected_output=xls';
+	}else if(type == 'pdf'){
+		datainput += '&expected_output=pdf';
+	}	
+	
+	
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function(){
+		if (this.readyState == 4 && this.status == 200) {
+
+		}
+	}
+	xhr.open('POST', targeturl+'/list', true);
+	xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	xhr.responseType = 'blob';
+	xhr.onload = function() {
+		// Only handle status code 200
+		if(xhr.status === 200) {
+			// Try to find out the filename from the content disposition `filename` value
+			var filename = '';
+			if (xhr.getResponseHeader('Content-Disposition').indexOf('"') > -1) {
+				filename = xhr.getResponseHeader('Content-Disposition').match(/filename="(.+)"/)[1];
+			} else {
+				filename = xhr.getResponseHeader('Content-Disposition').match(/Filename=(.+)/)[1];
+			}
+			if (filename[filename.length-1] == '"') {
+				filename = filename.substring(filename, filename.length - 1);
+			}
+			console.log(filename);
+			
+			// The actual download
+			if(type == 'xls'){
+				var blob = new Blob([xhr.response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+			}else if(type == 'pdf'){
+				var blob = new Blob([xhr.response], { type: 'application/pdf' });
+			}			
+			
+			var link = document.createElement('a');
+			link.href = window.URL.createObjectURL(blob);
+			link.download = filename;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
+
+	  // some error handling should be done here...
+	};
+	
+	console.log(datainput);
+	xhr.send(datainput); 			
+	
+	return false;
+}
 
 function get_data(data){
 	console.log('from filter : '+fromfilter);
@@ -308,6 +362,7 @@ function get_data(data){
 		}
 		set_pagination();
 		set_filter_title();
+		set_daterange();		
 	}else if(data.type == 'insert_default'){
 		$('#modal-add .modal-body').html(generate_form(false));
 		$('#modal-add').modal('show');		
@@ -358,6 +413,19 @@ function get_data(data){
 		$('#'+the_data.data.id+' .modal-footer').html(html);		
 		$('#'+the_data.data.id).modal('show');
 	}
+}
+
+function set_daterange(){
+	for(i=0;i<field_data.length;i++){
+		if(field_data[i].type == 'daterange'){
+			$('input[name="'+field_data[i].name+'"]').daterangepicker({
+				locale: {
+				  format: field_data[i].format,
+				}
+			});
+		}
+	}
+	
 }
 
 function onclik_submit(){
@@ -462,6 +530,50 @@ function generate_json_from_field(selector){
 		i++;
 	});
 	datainput += '}';
+	return datainput;
+}
+
+function generate_param_from_field(selector){
+	console.log('generate param from field form');
+	var field = $(selector).find( "[name]" );
+	var datainput='';
+	var i= 0;
+	$(field).each(function(index,element){
+		if($(this).is(':checkbox')){
+			if($(this).is( ':checked' )){
+				datainput += ''+element.name+'';
+				datainput += '=';
+				datainput += ''+element.value+'';
+				if(i != field.length -1 ){
+					datainput += '&';
+				}
+			}else{
+				datainput += ''+element.name+'';
+				datainput += '=';				
+				datainput += 'off';
+				if(i != field.length -1 ){
+					datainput += '&';
+				}
+			}
+		}else if($(this).is(':radio')){
+			if($(this).is( ':checked' )){
+				datainput += ''+element.name+'';
+				datainput += '=';
+				datainput += ''+element.value+'';
+				if(i != field.length -1 ){
+					datainput += '&';
+				}
+			}
+		}else{
+			datainput += ''+element.name+'';
+			datainput += '=';
+			datainput += ''+element.value+'';
+			if(i != field.length -1 ){
+				datainput += '&';
+			}
+		}		
+		i++;
+	});
 	return datainput;
 }
 
@@ -590,6 +702,10 @@ function set_field_form(data){
 		html += '<input type="file" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
 		html += field_classes(data.classes, data.name);
 		html += '>';
+	}else if(data.type == 'daterange'){
+		html += '<input type="text" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" ';					
+		html += field_classes(data.classes, data.name);
+		html += ' />';
 	}else if(data.type == 'info'){
 		html += '<div class="">'+data.value+'</div>';
 	}

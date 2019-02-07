@@ -180,6 +180,15 @@ class Menu extends CI_Controller {
 			'options'		=> $parent,
 			'classes' 		=> 'required full-width',
 		);
+/* 		$r_tgl_pickup = '';
+		$fields[] = (object) array(
+			'type' 			=> 'daterange',
+			'label' 		=> 'tgl_pickup',
+			'format' 		=> 'YYYY-MM-DD',
+			'name' 			=> 'tgl_pickup',
+			'value' 		=> $r_tgl_pickup,
+			'classes' 		=> 'full-width',
+		);	 */	
 
 		$toolbars = array();
 		$toolbars[] = (object) array(
@@ -206,7 +215,8 @@ class Menu extends CI_Controller {
 				'statusable'=> true,
 				'detailable'=> true,
 				'pdf'		=> false,
-				'xls'		=> false,
+				'xls'		=> true,
+				'title'		=> 'List Menu',
 				'pagination'=> $limit,
 				'filters'  	=> $fields,
 				'toolbars'	=> null,
@@ -214,8 +224,27 @@ class Menu extends CI_Controller {
 				'body'  	=> $body,
 				'footer'  	=> null,
 			)
-		);		
-		echo json_encode($this->data['list']);
+		);	
+		
+		if((isset($_POST['expected_output']))){
+			//var_dump($_POST['expected_output']);
+			if($_POST['expected_output'] == 'pdf'){
+				$parameter = array (
+					$this->data['list'], null, null, null, null, false, true, 10
+				);				
+				$this->load->library('generatepdf', $parameter);
+				$this->generatepdf->generate_pdf('L', 'F4');
+			}else if ($_POST['expected_output'] == 'xls') {
+				//var_dump($this->data['list']);die;
+				$parameter = array (
+					$this->data['list']
+				);				
+				$this->load->library('generatexls', $parameter);
+				$this->generatexls->generate_xls();
+			}
+		}else{
+			echo json_encode($this->data['list']);
+		}
 	}
 	
 	public function modal_form(){
