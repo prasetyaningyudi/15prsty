@@ -10,7 +10,9 @@
     margin-left: 70px;
     z-index: 2
 }
-
+.daterangepicker{
+	z-index: 100000 !important;
+}
 .toolbar-left{
 	padding-top: 15px;
 }

@@ -208,7 +208,7 @@ class Menu extends CI_Controller {
 		$this->data['list'] = (object) array (
 			'type'  	=> 'table_default',
 			'data'		=> (object) array (
-				'classes'  	=> 'striped bordered hover',
+				'classes'  	=> 'table-striped table-bordered table-hover',
 				'insertable'=> true,
 				'editable'	=> true,
 				'deletable'	=> true,

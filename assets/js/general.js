@@ -365,7 +365,9 @@ function get_data(data){
 		set_daterange();		
 	}else if(data.type == 'insert_default'){
 		$('#modal-add .modal-body').html(generate_form(false));
-		$('#modal-add').modal('show');		
+		$('#modal-add').modal('show');
+		set_daterange();
+		set_date();
 	}else if(data.type == 'update_default'){
 		$('#modal-edit .modal-body').html(generate_form(false));
 		$('#modal-edit').modal('show');	
@@ -422,6 +424,17 @@ function set_daterange(){
 				locale: {
 				  format: field_data[i].format,
 				}
+			});
+		}
+	}
+	
+}
+
+function set_date(){
+	for(i=0;i<field_data.length;i++){
+		if(field_data[i].type == 'date'){
+			$('input[name="'+field_data[i].name+'"]').datetimepicker({
+				  format: field_data[i].format
 			});
 		}
 	}
@@ -608,6 +621,15 @@ function generate_form(from_filter){
 			}
 			html += '<hr>';
 			html += '</div>';			
+		}else if(field_data[i].type == 'blank'){
+			if(field_data[i].classes.includes("full-width") == true){
+				html += '<div class="form-group col-md-12 col-sm-12 col-xs-12">';
+			}else{
+				html += '<div class="form-group col-md-6 col-sm-6 col-xs-12">';
+			}
+			html += '<label><h5>.<h5></label>';
+			html += '<hr style="margin-bottom: 0px !important">';			
+			html += '</div>';			
 		}else{
 			if(field_data[i].classes.includes("full-width") == true){
 				html += '<div class="form-group '+hidding_field(field_data[i].classes)+' col-md-12 col-sm-12 col-xs-12">';
@@ -630,6 +652,10 @@ function set_field_form(data){
 		html += '<input type="text" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
 		html += field_classes(data.classes, data.name);
 		html += '>';
+	}else if(data.type == 'number'){
+		html += '<input type="number" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
+		html += field_classes(data.classes, data.name);
+		html += '>';
 	}else if(data.type == 'email'){
 		html += '<input type="email" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
 		html += field_classes(data.classes, data.name);
@@ -637,10 +663,6 @@ function set_field_form(data){
 	}else if(data.type == 'password'){
 		html += '<input type="password" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
 		html += field_classes(data.classes);
-		html += '>';
-	}else if(data.type == 'date'){
-		html += '<input type="date" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
-		html += field_classes(data.classes, data.name);
 		html += '>';
 	}else if(data.type == 'textarea'){
 		html += '<textarea name="'+data.name+'" id="'+data.name+'" class="form-control" rows="4" placeholder="'+data.placeholder+'" ';					
@@ -703,6 +725,10 @@ function set_field_form(data){
 		html += field_classes(data.classes, data.name);
 		html += '>';
 	}else if(data.type == 'daterange'){
+		html += '<input type="text" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" ';					
+		html += field_classes(data.classes, data.name);
+		html += ' />';
+	}else if(data.type == 'date'){
 		html += '<input type="text" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" ';					
 		html += field_classes(data.classes, data.name);
 		html += ' />';
