@@ -19,9 +19,9 @@ class Sample extends CI_Controller {
 			$this->data['sub_menu'] = $this->menu_model->get_sub_menu($this->menu_model->get_guest_id('guest'));			
 		}
 		$this->load->model('app_data_model');		
-		$this->data['app_data'] = $this->app_data_model->get();
+		$this->data['app_data'] = $this->app_data_model->get();			
 		$this->data['error'] = array();
-		$this->data['title'] = 'Sample';
+		$this->data['title'] = 'Menu';
 	}
 
 	public function index(){
@@ -42,21 +42,49 @@ class Sample extends CI_Controller {
 			redirect ('authentication/unauthorized');
 		}		
 		$filters = array();
-		$limit = array('10', '0');
+		$limit = array('1', '0');
+		$r_nama = '';
+		$r_parent = '';
+		$r_order = '';
+		$r_status = '';
 
 		//var_dump($_POST['nama']);
-		if(isset($_POST['submit'])){			
+		if(isset($_POST['submit'])){
+			if (isset($_POST['nama'])) {
+				if ($_POST['nama'] != '' or $_POST['nama'] != null) {
+					$filters[] = "A.MENU_NAME LIKE '%" . $_POST['nama'] . "%'";
+					$r_nama = $_POST['nama'];
+				}
+			}
+			if (isset($_POST['parent'])) {
+				if ($_POST['parent'] != '' or $_POST['parent'] != null) {
+					$filters[] = "A.MENU_ID = '" . $_POST['parent'] . "'";
+					$r_parent = $_POST['parent'];
+				}
+			}
+			if (isset($_POST['status'])) {
+				if ($_POST['status'] != '' or $_POST['status'] != null) {
+					$filters[] = "A.STATUS = '" . $_POST['status'] . "'";
+					$r_status = $_POST['status'];
+				}
+			}
+			if (isset($_POST['order'])) {
+				if ($_POST['order'] != '' or $_POST['order'] != null) {
+					$filters[] = "A.MENU_ORDER LIKE '" . $_POST['order'] . "%'";
+					$r_order = $_POST['order'];
+				}
+			}			
 			if (isset($_POST['offset'])) {
 				if ($_POST['offset'] != '' or $_POST['offset'] != null) {
 					$limit[1] = $_POST['offset'];
 				}
 			}			
+			$data = $this->menu_model->get($filters, $limit);
+			//var_dump($data);
+			$total_data = count($this->menu_model->get($filters));
+			$limit[] = $total_data;		
 		}
 		
-		$data = $this->app_data_model->get($filters, $limit);
-		//var_dump($data);
-		$total_data = count($this->app_data_model->get($filters));
-		$limit[] = $total_data;
 		
 		//var_dump($data);
 
@@ -69,13 +97,21 @@ class Sample extends CI_Controller {
                 );
 			} else {
 				foreach ($data as $value) {
+					if($value->BMENU_NAME == null){
+						$menu_name = $value->MENU_NAME;
+					}else{
+						$menu_name = '&nbsp;&nbsp;&nbsp;'.$value->MENU_NAME;
+					}
+					
 					$body[$no_body] = array(
 						(object) array( 'classes' => ' hidden ', 'value' => $value->ID ),
 						(object) array( 'classes' => ' bold align-center ', 'value' => $no_body+1 ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->NAME ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->ICON ),
-						(object) array( 'classes' => ' align-left ', 'value' => $value->FAVICON ),
-						(object) array( 'classes' => ' align-center ', 'value' => $value->NOTES ),
+						(object) array( 'classes' => ' align-left ', 'value' => $menu_name ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->PERMALINK ),
+						(object) array( 'classes' => ' align-center ', 'value' => '<i class="fa fa-'.$value->MENU_ICON.'"></i>' ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->MENU_ORDER ),
+						(object) array( 'classes' => ' align-left ', 'value' => $value->BMENU_NAME ),
+						(object) array( 'classes' => ' align-center ', 'value' => $value->STATUS ),
 					);
 					$no_body++;
 				}
@@ -89,72 +125,81 @@ class Sample extends CI_Controller {
 		$header = array(
 			array (
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'No'),
-				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'App name'),								
-				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'App icon'),								
-				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'App Favicon'),								
-				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'marquee info'),			
+				(object) array ('colspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'name'),					
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'permalink'),			
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'icon'),			
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'order'),			
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'parent'),			
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'status'),			
 			)		
 		);
+
+		$parent = array();
+		$data = $this->menu_model->get_parent();
 		
+		if (empty($data)) {
+			
+		} else {
+			foreach ($data as $value) {
+				$parent[] = (object) array('label'=>$value->MENU_NAME, 'value'=>$value->ID);
+			}
+		}	
+			
 		$fields = array();
 		$fields[] = (object) array(
 			'type' 			=> 'text',
-			'label' 		=> 'awb',
-			'placeholder' 	=> 'awb',
-			'name' 			=> 'awb',
-			'value' 		=> '',
+			'label' 		=> 'Name',
+			'placeholder' 	=> 'Menu Name',
+			'name' 			=> 'nama',
+			'value' 		=> $r_nama,
 			'classes' 		=> 'full-width',
-		);		
+		);
 		$fields[] = (object) array(
-			'type' 			=> 'daterange',
-			'label' 		=> 'tgl_pickup',
-			'format' 		=> 'YYYY-MM-DD',
-			'name' 			=> 'tgl_pickup',
-			'value' 		=> '',
+			'type' 			=> 'text',
+			'label' 		=> 'Menu Order',
+			'name' 			=> 'order',
+			'placeholder'	=> 'Input order like',
+			'value' 		=> $r_order,
 			'classes' 		=> 'full-width',
-		);		
+		);			
+		$fields[] = (object) array(
+			'type' 			=> 'text',
+			'label' 		=> 'Status',
+			'name' 			=> 'status',
+			'placeholder'	=> 'Input status',
+			'value' 		=> $r_status,
+			'classes' 		=> 'full-width',
+		);			
+		$fields[] = (object) array(
+			'type' 			=> 'select',
+			'label' 		=> 'Parent menu',
+			'name' 			=> 'parent',
+			'placeholder'	=> '--Select Parent--',
+			'value' 		=> $r_parent,
+			'options'		=> $parent,
+			'classes' 		=> 'required full-width',
+		);
 		
-		if (empty($data)){
-			$this->data['list'] = (object) array (
-				'type'  	=> 'table_default',
-				'data'		=> (object) array (
-					'classes'  	=> 'striped bordered hover',
-					'insertable'=> true,
-					'editable'	=> true,
-					'deletable'	=> true,
-					'statusable'=> false,
-					'detailable'=> true,
-					'pdf'		=> false,
-					'xls'		=> false,
-					'pagination'=> $limit,
-					'filters'  	=> $fields,
-					'toolbars'	=> null,
-					'header'  	=> $header,
-					'body'  	=> $body,
-					'footer'  	=> null,
-				)
-			);
-		}else{
-			$this->data['list'] = (object) array (
-				'type'  	=> 'table_default',
-				'data'		=> (object) array (
-					'classes'  	=> 'striped bordered hover',
-					'insertable'=> false,
-					'editable'	=> true,
-					'deletable'	=> true,
-					'statusable'=> false,
-					'detailable'=> true,
-					'pdf'		=> false,
-					'xls'		=> false,
-					'pagination'=> $limit,
-					'filters'  	=> null,
-					'toolbars'	=> null,
-					'header'  	=> $header,
-					'body'  	=> $body,
-					'footer'  	=> null,
-				)
-			);			
-		}
+		$this->data['list'] = (object) array (
+			'type'  	=> 'table_default',
+			'data'		=> (object) array (
+				'classes'  	=> 'striped bordered hover',
+				'insertable'=> true,
+				'editable'	=> true,
+				'deletable'	=> true,
+				'statusable'=> false,
+				'detailable'=> true,
+				'pdf'		=> false,
+				'xls'		=> false,
+				'pagination'=> $limit,
+				'filters'  	=> $fields,
+				'toolbars'	=> null,
+				'header'  	=> $header,
+				'body'  	=> $body,
+				'footer'  	=> null,
+				'filterfirst'=> true,
+			)
+		);
 		echo json_encode($this->data['list']);
 	}
 	

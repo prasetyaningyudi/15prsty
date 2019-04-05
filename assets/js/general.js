@@ -121,6 +121,29 @@ $('#button-submit-filter').on('click',function(){
 	return false;
 });
 
+$('#button-submit-filter-first').on('click',function(){
+	var datainput = generate_json_from_field("#form-filter-first");
+	//console.log(datainput);
+	$.ajax({
+		type : "POST",
+		url  : targeturl+'/list',
+		dataType : "JSON",
+		data : JSON.parse(datainput),
+		success: function(data){
+			from_filter(true);
+			get_data(data);
+			$('ul#myTab-filter-first li:eq(0)').removeClass('active');
+			$('ul#myTab-filter-first li:eq(1)').addClass('active');
+			$('#tab_filter1').removeClass('active');
+			$('#tab_filter1').removeClass('in');
+			$('#tab_filter2').addClass('active');
+			$('#tab_filter2').addClass('in');			
+		}
+	});
+
+	return false;
+});
+
 //get data for delete record
 $('#show-data').on('click','.item-delete',function(){
 	var id = $(this).attr("id");
@@ -355,12 +378,22 @@ function get_data(data){
 	the_data = data;
 	
 	if(data.type == 'table_default'){
+		init_display();		
 		hide_toolbar();
-		$('#show-data').html(generate_table());
+		
+		if(the_data.data.filterfirst == true){
+			console.log('filter-first');
+			$('.tab-filter-first').show();
+			$('#show-data-filter-first').html(generate_table());
+		}else{
+			$('.main-table').show();
+			$('#show-data').html(generate_table());
+		}
 		if(the_data.data.filters != null){
 			$('.modal-filter .filter-body').html(generate_form(true));
+			$('.content-filter-first .filter-first-body').html(generate_form(true));
 		}
-		set_pagination();
+		set_pagination();		
 		set_filter_title();
 		set_daterange();		
 	}else if(data.type == 'insert_default'){
@@ -792,6 +825,17 @@ function change_select(split, name){
 			$('[name="'+name+'"]').parent().addClass('hidding');
 		}
 	});
+}
+
+function init_display(){
+	console.log( 'hide display' );
+	$(".button-add").hide();
+	$(".button-pdf").hide();
+	$(".button-xls").hide();
+	$(".button-filter").hide();
+	$(".tab-filter-first").hide();
+	$(".tab-two-content").hide();
+	$(".main-table").hide();
 }
 
 function hide_toolbar(){

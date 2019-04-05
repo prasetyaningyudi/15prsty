@@ -200,11 +200,63 @@
                 </div>
                 <div class="x_content">
                   <div class="dashboard-widget-content">
-					<div id="show-data">
+					<div class="tab-filter-first" role="tabpanel" data-example-id="togglable-tabs">
+					  <ul id="myTab-filter-first" class="nav nav-tabs bar_tabs" role="tablist">
+						<li role="presentation" class="active"><a href="#tab_filter1" id="filter-tab1" role="tab" data-toggle="tab" aria-expanded="true">Filters</a>
+						</li>
+						<li role="presentation" class=""><a href="#tab_filter2" role="tab" id="filter-tab" data-toggle="tab" aria-expanded="false">Data</a>
+						</li>
+					  </ul>
+					  <div id="myTabContent" class="tab-content">
+						<div role="tabpanel" class="tab-pane fade active in" id="tab_filter1" aria-labelledby="filter-tab1">
+							<div class="content-filter-first">
+								<form id="form-filter-first">
+									<div class="filter-first-body">
+									</div>
+									<div class="filter-first-footer">
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<input role="button" type="reset" id="button-reset" name="reset" class="btn btn-info" value="reset">
+										</div>					
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<input role="button" type="submit" id="button-submit-filter-first" name="submit" class="btn btn-primary align-right" value="submit">
+										</div>									
+									</div>									
+								</form>
+							</div>
+							
+						</div>
+						<div role="tabpanel" class="tab-pane fade" id="tab_filter2" aria-labelledby="filter-tab2">
+							<div id="show-data-filter-first">
+							</div>
+							<div class="paging text-center">
+							</div>
+						</div>							
+					  </div>
+					</div>
 					
-					</div>
-					<div class="paging text-center">
-					</div>
+					<div class="tab-two-content" role="tabpanel" data-example-id="togglable-tabs">
+					  <ul id="myTab-two-content" class="nav nav-tabs bar_tabs" role="tablist">
+						<li role="presentation" class="active"><a href="#tab_content1" id="content-tab1" role="tab" data-toggle="tab" aria-expanded="true">Tab 1</a>
+						
+						</li>
+						<li role="presentation" class=""><a href="#tab_content2" role="tab" id="content-tab2" data-toggle="tab" aria-expanded="false">Tab 2</a>
+						</li>
+					  </ul>
+					  <div id="myTabContent" class="tab-content">
+						<div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="content-tab1">
+							content 1
+						</div>
+						<div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="content-tab2">
+							content 2
+						</div>							
+					  </div>
+					</div>					
+					<div class="main-table">
+						<div id="show-data">
+						</div>
+						<div class="paging text-center">
+						</div>						
+					</div>						
                   </div>
                 </div>
               </div>
