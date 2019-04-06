@@ -43,7 +43,7 @@ class Menu extends CI_Controller {
 			redirect ('authentication/unauthorized');
 		}		
 		$filters = array();
-		$limit = array('10', '0');
+		$limit = array('100', '0');
 		$r_nama = '';
 		$r_parent = '';
 		$r_order = '';
@@ -134,6 +134,17 @@ class Menu extends CI_Controller {
 				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'status'),			
 			)		
 		);
+		
+		$footer = array(
+			array (
+				(object) array ('colspan' => 2, 'classes' => 'bold align-center capitalize', 'value' => 'name'),					
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'permalink'),			
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'icon'),			
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'order'),			
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'parent'),			
+				(object) array ('rowspan' => 1, 'classes' => 'bold align-center capitalize', 'value' => 'status'),			
+			)		
+		);		
 
 		$parent = array();
 		$data = $this->menu_model->get_parent();
@@ -222,7 +233,7 @@ class Menu extends CI_Controller {
 				'toolbars'	=> null,
 				'header'  	=> $header,
 				'body'  	=> $body,
-				'footer'  	=> null,
+				'footer'  	=> $footer,
 			)
 		);	
 		

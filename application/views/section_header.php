@@ -54,5 +54,9 @@
     <script src="<?php echo base_url(); ?>assets/vendors/jquery/dist/jquery.min.js"></script>
     <!-- Bootstrap -->
     <script src="<?php echo base_url(); ?>assets/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
-	
+	<style>
+		button-add, .button-pdf, .button-xls, .button-filter,	.tab-filter-first, .tab-two-content, .main-table{
+			display:none;
+		}
+	</style>
   </head>

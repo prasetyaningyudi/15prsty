@@ -378,7 +378,7 @@ function get_data(data){
 	the_data = data;
 	
 	if(data.type == 'table_default'){
-		init_display();		
+		//init_display();		
 		hide_toolbar();
 		
 		if(the_data.data.filterfirst == true){
@@ -663,6 +663,14 @@ function generate_form(from_filter){
 			html += '<label><h5>.<h5></label>';
 			html += '<hr style="margin-bottom: 0px !important">';			
 			html += '</div>';			
+		}else if(field_data[i].type == 'toogle'){
+			if(field_data[i].classes.includes("full-width") == true){
+				html += '<div class="form-group col-md-12 col-sm-12 col-xs-12">';
+			}else{
+				html += '<div class="form-group col-md-6 col-sm-6 col-xs-12">';
+			}
+			html += set_field_form(field_data[i]);
+			html += '</div>';			
 		}else{
 			if(field_data[i].classes.includes("full-width") == true){
 				html += '<div class="form-group '+hidding_field(field_data[i].classes)+' col-md-12 col-sm-12 col-xs-12">';
@@ -710,6 +718,7 @@ function set_field_form(data){
 		html += field_classes(data.classes);
 		html += '>';
 		if(data.placeholder == ''){
+			
 		}else{
 			html += '<option value="">'+data.placeholder+'</option>';
 		}
@@ -767,6 +776,15 @@ function set_field_form(data){
 		html += ' />';
 	}else if(data.type == 'info'){
 		html += '<div class="">'+data.value+'</div>';
+	}else if(data.type == 'toogle'){
+		html += '<input type="checkbox" name="'+data.name+'" id="'+data.name+'" ';					
+		html += field_classes(data.classes, data.name);
+		if(data.value == 'on'){
+			html += 'checked>';
+		}else{
+			html += '> ';
+		}
+		html += data.label;
 	}
 	return html;
 }
@@ -796,7 +814,7 @@ function field_classes(value, name){
 				for(i=0;i<field_data.length;i++){
 					if(field_data[i].name == item_split[0]){
 						console.log(field_data[i].name);
-						change_select(item_split, name);
+						change_select(item_split, name, field_data[i].type);
 					}
 				}
 			}
@@ -814,17 +832,31 @@ function hidding_field(value){
 	}
 }
 
-function change_select(split, name){
-	$(document).on('change', '[name="'+split[0]+'"]', function() {
-		if($(this).val() == split[1]){
-			console.log('sama');
-			$('[name="'+name+'"]').parent().removeClass('hidding');
-			$('[name="'+name+'"]').parent().addClass('displayed');
-		}else{
-			$('[name="'+name+'"]').parent().removeClass('displayed');
-			$('[name="'+name+'"]').parent().addClass('hidding');
-		}
-	});
+function change_select(split, name, type){
+	console.log()
+	if( type == 'select'){
+		$(document).on('change', '[name="'+split[0]+'"]', function() {
+			if($(this).val() == split[1]){
+				console.log('sama');
+				$('[name="'+name+'"]').parent().removeClass('hidding');
+				$('[name="'+name+'"]').parent().addClass('displayed');
+			}else{
+				$('[name="'+name+'"]').parent().removeClass('displayed');
+				$('[name="'+name+'"]').parent().addClass('hidding');
+			}
+		});
+	}else if( type  == 'toogle'){
+		$(document).on('change', '[name="'+split[0]+'"]', function() {
+			if(this.checked) {
+				console.log('sama');
+				$('[name="'+name+'"]').parent().removeClass('hidding');
+				$('[name="'+name+'"]').parent().addClass('displayed');
+			}else{
+				$('[name="'+name+'"]').parent().removeClass('displayed');
+				$('[name="'+name+'"]').parent().addClass('hidding');
+			}
+		});		
+	}
 }
 
 function init_display(){
@@ -919,6 +951,9 @@ function generate_table(){
 	html += '</thead>';
 	html += '<tbody>';
 	html += set_table_body();
+	if(the_data.data.footer != null){
+		html += set_table_footer();
+	}
 	html += '</tbody>';
 	html += '</table>';
 	html += '</div>';
@@ -1003,6 +1038,36 @@ function set_table_body(){
 				html += '</td>';
 			}			
 		}					
+		html += '</tr>';
+	}
+	return html;
+}
+
+function set_table_footer(){
+	console.log('set table footer');
+	var html = '';
+	var i;
+	var j;
+	for(i=0; i<the_data.data.footer.length; i++){
+		html += '<tr>';
+		for(j=0; j<the_data.data.footer[i].length; j++){
+			html += '<td class="align-middle '+ text_classes(the_data.data.footer[i][j].classes)+ '" ';     
+			if(the_data.data.footer[i][j].rowspan != null){
+				html += 'rowspan="'+the_data.data.footer[i][j].rowspan+'" ';	
+			}
+			if(the_data.data.footer[i][j].colspan != null){
+				html += 'colspan="'+the_data.data.footer[i][j].colspan+'" ';	
+			}							
+			html += '>';
+			html += the_data.data.footer[i][j].value;
+			html += '</td>';
+		}
+		if(the_data.data.editable == true || the_data.data.deletable == true || the_data.data.statusable == true || the_data.data.detailable == true){
+			if(i==0){
+				html += '<td class="align-middle text-center font-weight-bold" rowspan="'+the_data.data.footer.length+'" colspan="4">';
+				html += '</td>'; 
+			}
+		}
 		html += '</tr>';
 	}
 	return html;

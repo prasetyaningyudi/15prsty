@@ -272,6 +272,41 @@ class Sample extends CI_Controller {
 				'classes' 		=> '',
 			);
 			$fields[] = (object) array(
+				'type' 			=> 'label',
+				'label' 		=> 'Contoh label',
+				'classes' 		=> 'full-width',
+			);			
+			$fields[] = (object) array(
+				'type' 			=> 'toogle',
+				'label' 		=> 'Toogle1',
+				'name' 			=> 'toogle1',
+				'value' 		=> '',
+				'classes' 		=> '',
+			);	
+			$fields[] = (object) array(
+				'type' 			=> 'toogle',
+				'label' 		=> 'Toogle2',
+				'name' 			=> 'toogle2',
+				'value' 		=> '',
+				'classes' 		=> '',
+			);	
+			$fields[] = (object) array(
+				'type' 			=> 'text',
+				'label' 		=> 'Text toogle 1',
+				'name' 			=> 'text-toogle1',
+				'placeholder'	=> 'Text toogle 1',
+				'value' 		=> '',
+				'classes' 		=> 'active-when-toogle1-on',
+			);	
+			$fields[] = (object) array(
+				'type' 			=> 'text',
+				'label' 		=> 'Text toogle 2',
+				'name' 			=> 'text-toogle2',
+				'placeholder'	=> 'Text toogle 2',
+				'value' 		=> '',
+				'classes' 		=> 'active-when-toogle2-on',
+			);				
+			$fields[] = (object) array(
 				'type' 			=> 'daterange',
 				'label' 		=> 'date range',
 				'format' 		=> 'YYYY-MM-DD',
