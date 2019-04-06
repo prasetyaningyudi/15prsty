@@ -138,7 +138,17 @@
 						<a href="javascript:void(0)">
 							<i style="font-size: 16px;" class="fa fa-filter"></i><br>FILTER
 						</a>
-					</div>									
+					</div>
+					<div class="button-toolbar-item button-filter2">
+						<a href="javascript:void(0)">
+							<i style="font-size: 16px;" class="fa fa-filter"></i><br>FILTER2
+						</a>
+					</div>	
+					<div class="button-toolbar-item button-filter1">
+						<a href="javascript:void(0)">
+							<i style="font-size: 16px;" class="fa fa-filter"></i><br>FILTER1
+						</a>
+					</div>						
 					<div class="button-toolbar-item button-pdf">
 						<a href="javascript:void(0)" onclick="expected_output('pdf')">
 							<i style="font-size: 16px;" class="fas fa-file-pdf"></i><br>PDF
@@ -244,10 +254,12 @@
 					  </ul>
 					  <div id="myTabContent" class="tab-content">
 						<div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="content-tab1">
-							content 1
+							<div id="show-data-content-one">
+							</div>
 						</div>
 						<div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="content-tab2">
-							content 2
+							<div id="show-data-content-two">
+							</div>
 						</div>							
 					  </div>
 					</div>					

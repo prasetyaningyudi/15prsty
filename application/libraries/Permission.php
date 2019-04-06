@@ -3,9 +3,11 @@
 $roles = array(
 			'' => array (
 				'home' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete'),
-				'menu' => array ('index', 'list'),				
+				'menu' => array ('index', 'list'),		
+				'sampletwotable' => array ('index', 'list'),					
 			),
 			'administrator' => array (
+				'sampletwotable' => array ('index', 'list'),			
 				'assignmenu' => array ('index', 'list', 'insert', 'update', 'delete'),
 				'menu' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete', 'detail', 'modal_form', 'modal_table', 'data_form'),
 				'user' => array ('index', 'list', 'insert', 'update', 'update_status', 'delete', 'detail', 'm_form_user_info', 'insert_user_info', 'm_user_info'),
