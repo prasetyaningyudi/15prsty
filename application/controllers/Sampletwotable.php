@@ -39,7 +39,7 @@ class Sampletwotable extends CI_Controller {
 		$this->load->view('section_footer');			
 	}
 
-	public function list(){
+	public function lists(){
 		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
 			redirect ('authentication/unauthorized');
 		}		

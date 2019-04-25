@@ -38,12 +38,12 @@ class Menu extends CI_Controller {
 		$this->load->view('section_footer');			
 	}
 
-	public function list(){
+	public function lists(){
 		if($this->auth->get_permission($this->session->userdata('ROLE_NAME'), __CLASS__ , __FUNCTION__ ) == false){
 			redirect ('authentication/unauthorized');
 		}		
 		$filters = array();
-		$limit = array('100', '0');
+		$limit = array('20', '0');
 		$r_nama = '';
 		$r_parent = '';
 		$r_order = '';

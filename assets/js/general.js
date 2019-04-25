@@ -7,11 +7,50 @@ var globallimit;
 var globalform;
 var field_data;
 
+function openWindow(url){
+	targeturl = url;
+	var listurl='';
+	console.log(targeturl);
+	var array_split = targeturl.split("/");
+	array_split.forEach(function(item) {
+		if(item == ''){
+			
+		}else{
+			listurl = listurl+item+'/';
+		}
+	});
+	$.ajax({
+		type  : 'ajax',
+		url   : listurl,
+		async : true,
+		dataType : 'json',
+		success : function(data){
+			$('#show-data').html('');
+			from_filter(false);
+			get_data(data);
+		}
+	});		
+}
+
 function initiation(url){
 	targeturl = url;
 	$.ajax({
 		type  : 'ajax',
-		url   : targeturl + '/list',
+		url   : targeturl + '/lists',
+		async : true,
+		dataType : 'json',
+		success : function(data){
+			from_filter(false);
+			get_data(data);
+		}
+	});	
+}
+
+function initiation_target(url){
+	targeturl = url;
+	$.ajax({
+		type  : 'ajax',
+		url   : targeturl,
 		async : true,
 		dataType : 'json',
 		success : function(data){
@@ -108,7 +147,7 @@ $('#button-submit-filter').on('click',function(){
 	//console.log(datainput);
 	$.ajax({
 		type : "POST",
-		url  : targeturl+'/list',
+		url  : targeturl+'/lists',
 		dataType : "JSON",
 		data : JSON.parse(datainput),
 		success: function(data){
@@ -126,7 +165,7 @@ $('#button-submit-filter-first').on('click',function(){
 	//console.log(datainput);
 	$.ajax({
 		type : "POST",
-		url  : targeturl+'/list',
+		url  : targeturl+'/lists',
 		dataType : "JSON",
 		data : JSON.parse(datainput),
 		success: function(data){
@@ -274,7 +313,64 @@ function set_pagination(){
 	}
 }
 
+function set_pagination_dropdown(){
+	if(the_data.data.pagination != null){
+		var limit = the_data.data.pagination[0];
+		globallimit = limit;
+		var offset = the_data.data.pagination[1];
+		var total = the_data.data.pagination[2];
+		var iterasi = Math.ceil(total/limit);
+		//console.log('total: ' + total);
+		//console.log('Iterasi: '+ iterasi);
+		//console.log(total/limit);
+		//console.log('Perpage: '+ limit);
+		
+		html = '<nav aria-label="pagination-example">';
+		html +=	'<ul class="pagination justify-content-center">';
+		if(offset == '0'){
+			html +=	'<li class="page-item disabled"><a href="javascript:void(0)" numb="" class="page-link">Prev</a></li>';
+		}else{
+			html +=	'<li class="page-item"><a href="javascript:void(0)" numb="'+(offset/limit)+'" class="page-link">Prev</a></li>';
+		}					
+
+		for(var i = 0; i<iterasi; i++){
+			if(offset/limit == i){
+				html +=	'<li class="page-item active"><a href="javascript:void(0)" numb="'+(i+1)+'" class="page-link">'+(i+1)+'</a></li>';
+			}else{
+				//html +=	'<li class="page-item"><a href="javascript:void(0)" numb="'+(i+1)+'" class="page-link">'+(i+1)+'</a></li>';
+			}
+		}
+
+		if((total - offset) <= limit){
+			html +=	'<li class="page-item disabled"><a class="page-link">Next</a></li>';
+		}else{
+			html +=	'<li class="page-item"><a href="javascript:void(0)" numb ="'+(offset/limit+2)+'" class="page-link">Next</a></li>';
+		}	
+		
+
+		html += '<li>';
+		html += '<div class="btn-group dropup">';
+		html += '<button data-toggle="dropdown" class="btn btn-default" type="button" aria-expanded="false">';
+		html += 'halaman <span class="caret"></span> </button><ul class="dropdown-menu">';
+		for(var i = 0; i<iterasi; i++){
+			if(offset/limit == i){
+				html +=	'<li class="page-item active"><a href="javascript:void(0)" numb="'+(i+1)+'" class="page-link">'+(i+1)+'</a></li>';
+			}else{
+				html +=	'<li class="page-item"><a href="javascript:void(0)" numb="'+(i+1)+'" class="page-link">'+(i+1)+'</a></li>';
+			}
+		}		
+		html += '</ul></div>';
+		html += '</li>';
+		
+		html +=	'</ul>';
+		html +=	'</nav>';
+		
+		$('.paging').html(html);
+	}
+}
+
 $('.paging').on('click','a.page-link',function(){
+	console.log(fromfilter);
 	current_offset = ($(this).attr('numb') - 1) * globallimit;
 	if(fromfilter == false){
 		var datainput='{';
@@ -283,7 +379,11 @@ $('.paging').on('click','a.page-link',function(){
 		datainput += '}';
 		//console.log(datainput);
 	}else{
-		var datainput = generate_json_from_field("#form-filter");
+		if(the_data.data.filterfirst == true){
+			var datainput = generate_json_from_field("#form-filter-first");			
+		}else{
+			var datainput = generate_json_from_field("#form-filter");
+		}
 		datainput.length;
 		datainput = datainput.slice(0,(datainput.length-1));
 		datainput += ',"offset":"'+current_offset+'"}';
@@ -292,7 +392,7 @@ $('.paging').on('click','a.page-link',function(){
 	frompaging = true;
 	$.ajax({
 		type : "POST",
-		url  : targeturl+'/list',
+		url  : targeturl+'/lists',
 		dataType : "JSON",
 		data : JSON.parse(datainput),
 		success: function(data){
@@ -312,7 +412,11 @@ function expected_output(type){
 		var datainput='';
 		datainput += 'submit=submit';
 	}else{
-		var datainput = generate_param_from_field("#form-filter");
+		if(the_data.data.filterfirst == true){
+			var datainput = generate_param_from_field("#form-filter-first");
+		}else{
+			var datainput = generate_param_from_field("#form-filter");
+		}
 	}
 	if(frompaging == true){
 		datainput += '&offset='+current_offset;
@@ -331,7 +435,7 @@ function expected_output(type){
 
 		}
 	}
-	xhr.open('POST', targeturl+'/list', true);
+	xhr.open('POST', targeturl+'/lists', true);
 	xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 	xhr.responseType = 'blob';
 	xhr.onload = function() {
@@ -383,19 +487,21 @@ function get_data(data){
 		
 		if(the_data.data.filterfirst == true){
 			console.log('filter-first');
+			$('.button-filter').hide();
 			$('.tab-filter-first').show();
 			$('#show-data-filter-first').html(generate_table(the_data.data));
+			if(the_data.data.filters != null){
+				$('.content-filter-first .filter-first-body').html(generate_form(true));
+			}					
 		}else{
 			$('.main-table').show();
 			$('#show-data').html(generate_table(the_data.data));
+			if(the_data.data.filters != null){
+				$('.modal-filter .filter-body').html(generate_form(true));
+			}			
 		}
-		if(the_data.data.filters != null){
-			$('.modal-filter .filter-body').html(generate_form(true));
-			$('.content-filter-first .filter-first-body').html(generate_form(true));
-		}
-		set_pagination();		
+		set_pagination_dropdown();		
 		set_filter_title();
-		set_daterange();		
 	}else if(data.type == 'table_two'){
 		//init_display();		
 		hide_toolbar();
@@ -408,13 +514,34 @@ function get_data(data){
 		if(the_data.data.table2.subtitle != null){
 			$('#content-tab2').html(the_data.data.table2.subtitle);
 		}
+		if(the_data.data.filters != null){
+			$('.modal-filter .filter-body').html(generate_form(true));
+		}			
 		$('#show-data-content-one').html(generate_table(the_data.data.table1));	
 		$('#show-data-content-two').html(generate_table(the_data.data.table2));	
+		
+		console.log('active : '+the_data.data.active);
+		if(the_data.data.active != null || the_data.data.active != ''|| the_data.data.active != undefined){
+			if(the_data.data.active == '1'){
+				$('ul#myTab-two-content li:eq(1)').removeClass('active');
+				$('ul#myTab-two-content li:eq(0)').addClass('active');
+				$('#tab_content2').removeClass('active');
+				$('#tab_content2').removeClass('in');
+				$('#tab_content1').addClass('active');
+				$('#tab_content1').addClass('in');					
+			}else if(the_data.data.active == '2'){
+				$('ul#myTab-two-content li:eq(0)').removeClass('active');
+				$('ul#myTab-two-content li:eq(1)').addClass('active');
+				$('#tab_content1').removeClass('active');
+				$('#tab_content1').removeClass('in');
+				$('#tab_content2').addClass('active');
+				$('#tab_content2').addClass('in');				
+			}
+		}
+		
 	}else if(data.type == 'insert_default'){
 		$('#modal-add .modal-body').html(generate_form(false));
 		$('#modal-add').modal('show');
-		set_daterange();
-		set_date();
 	}else if(data.type == 'update_default'){
 		$('#modal-edit .modal-body').html(generate_form(false));
 		$('#modal-edit').modal('show');	
@@ -462,6 +589,14 @@ function get_data(data){
 		$('#'+the_data.data.id+' .modal-footer').html(html);		
 		$('#'+the_data.data.id).modal('show');
 	}
+	//console.log(field_data);
+		if(field_data != undefined){
+			set_daterange();
+			set_date();
+		}
+		if(the_data.data.title != null || the_data.data.title != '' || the_data.data.title != undefined){
+			$('.right_col h4').html(the_data.data.title);
+		}
 }
 
 function set_daterange(){
@@ -531,9 +666,9 @@ function generate_form_data(selector){
 	$(field).each(function(index,element){
 		if($(this).is(':checkbox')){
 			if($(this).is( ':checked' )){
-				formData.append(element.name, element.value);
+				formData.append(element.name, 'on');
 			}else{
-				formData.append(element.name, 'off');
+				formData.append(element.name, '');
 			}
 		}else if($(this).is(':radio')){
 			if($(this).is( ':checked' )){
@@ -558,14 +693,14 @@ function generate_json_from_field(selector){
 			if($(this).is( ':checked' )){
 				datainput += '"'+element.name+'"';
 				datainput += ':';
-				datainput += '"'+element.value+'"';
+				datainput += '"on"';
 				if(i != field.length -1 ){
 					datainput += ',';
 				}
 			}else{
 				datainput += '"'+element.name+'"';
 				datainput += ':';				
-				datainput += '"off"';
+				datainput += '""';
 				if(i != field.length -1 ){
 					datainput += ',';
 				}
@@ -603,14 +738,14 @@ function generate_param_from_field(selector){
 			if($(this).is( ':checked' )){
 				datainput += ''+element.name+'';
 				datainput += '=';
-				datainput += ''+element.value+'';
+				datainput += '"on"';
 				if(i != field.length -1 ){
 					datainput += '&';
 				}
 			}else{
 				datainput += ''+element.name+'';
 				datainput += '=';				
-				datainput += 'off';
+				datainput += '""';
 				if(i != field.length -1 ){
 					datainput += '&';
 				}
@@ -657,7 +792,7 @@ function generate_form(from_filter){
 			}else{
 				html += '<div class="form-group col-md-6 col-sm-6 col-xs-12">';
 			}
-			html += '<label><h5>'+field_data[i].label+'<h5></label>';
+			html += '<label><div class="'+text_classes(field_data[i].classes)+'">'+field_data[i].label+'</div></label>';
 			html += '<hr style="margin-bottom: 0px !important">';
 			html += '</div>';			
 		}else if(field_data[i].type == 'separation'){
@@ -687,9 +822,11 @@ function generate_form(from_filter){
 			html += '</div>';			
 		}else{
 			if(field_data[i].classes.includes("full-width") == true){
-				html += '<div class="form-group '+hidding_field(field_data[i].classes)+' col-md-12 col-sm-12 col-xs-12">';
+				html += '<div class="form-group '+hidding_field(field_data[i].classes, field_data[i].name)+' col-md-12 col-sm-12 col-xs-12">';
+				//html += '<div class="form-group col-md-12 col-sm-12 col-xs-12">';
 			}else{
-				html += '<div class="form-group '+hidding_field(field_data[i].classes)+' col-md-6 col-sm-6 col-xs-12">';
+				html += '<div class="form-group '+hidding_field(field_data[i].classes, field_data[i].name)+' col-md-6 col-sm-6 col-xs-12">';
+				//html += '<div class="form-group col-md-6 col-sm-6 col-xs-12">';
 			}
 			html += '<label>'+field_data[i].label+'</label>';
 			html += set_field_form(field_data[i]);
@@ -717,11 +854,11 @@ function set_field_form(data){
 		html += '>';
 	}else if(data.type == 'password'){
 		html += '<input type="password" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" placeholder="'+data.placeholder+'" ';					
-		html += field_classes(data.classes);
+		html += field_classes(data.classes, data.name);
 		html += '>';
 	}else if(data.type == 'textarea'){
 		html += '<textarea name="'+data.name+'" id="'+data.name+'" class="form-control" rows="4" placeholder="'+data.placeholder+'" ';					
-		html += field_classes(data.classes);
+		html += field_classes(data.classes, data.name);
 		html += '>'+data.value+'</textarea>';
 	}else if(data.type == 'hidden'){
 		html += '<input type="hidden" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" class="form-control" ';	
@@ -729,7 +866,7 @@ function set_field_form(data){
 		html += '></textarea>';
 	}else if(data.type == 'select'){
 		html += '<select name="'+data.name+'" id="'+data.name+'" class="form-control custom-select" ';	
-		html += field_classes(data.classes);
+		html += field_classes(data.classes, data.name);
 		html += '>';
 		if(data.placeholder == ''){
 			
@@ -791,10 +928,10 @@ function set_field_form(data){
 	}else if(data.type == 'info'){
 		html += '<div class="">'+data.value+'</div>';
 	}else if(data.type == 'toogle'){
-		html += '<input type="checkbox" name="'+data.name+'" id="'+data.name+'" ';					
+		html += '<input type="checkbox" name="'+data.name+'" id="'+data.name+'" value="'+data.value+'" ';					
 		html += field_classes(data.classes, data.name);
 		if(data.value == 'on'){
-			html += 'checked>';
+			html += 'checked> ';
 		}else{
 			html += '> ';
 		}
@@ -818,8 +955,8 @@ function field_classes(value, name){
 		disabled = 'disabled';
 	}
 	if(value.includes("active-when-") == true){
-		$('[name="'+name+'"]').addClass('hidding');
-		console.log('true');
+		//$('[name="'+name+'"]').parents('.form-group').show();
+		//console.log('true');
 		var array_split = value.split(" ");
 		array_split.forEach(function(item) {
 			if(item.includes("active-when-")){
@@ -827,8 +964,7 @@ function field_classes(value, name){
 				var item_split = item.substr(12).split('-');
 				for(i=0;i<field_data.length;i++){
 					if(field_data[i].name == item_split[0]){
-						console.log(field_data[i].name);
-						change_select(item_split, name, field_data[i].type);
+						change_select(item_split, name, field_data[i].type, field_data[i].value);
 					}
 				}
 			}
@@ -838,20 +974,48 @@ function field_classes(value, name){
 	return (required + ' ' + readonly + ' ' + disabled);
 }
 
-function hidding_field(value){
+function hidding_field(value, name){
+	var returnClass = 'tes';
 	if(value.includes("active-when-") == true){
-		return 'hidding';
+		var array_split = value.split(" ");
+		array_split.forEach(function(item) {
+			if(item.includes("active-when-")){
+				var i;
+				var item_split = item.substr(12).split('-');
+				for(i=0;i<field_data.length;i++){
+					if(field_data[i].name == item_split[0]){
+						//console.log(field_data[i].name);
+						if(field_data[i].type == 'toogle' && field_data[i].value == 'on'){
+							//console.log('toogle on');
+							returnClass =  'displayed';
+						}else{
+							//console.log('toogle off');
+							returnClass =  'hidding';
+						}
+						if(field_data[i].type == 'select' && field_data[i].value == item_split[1]){
+							returnClass =  'displayed';
+						}else{
+							returnClass =  'hidding';
+						}
+					}
+				}
+			}
+		});
 	}else{
-		return '';
+		returnClass =  '';
 	}
+	//console.log(returnClass);
+	return returnClass;
 }
 
-function change_select(split, name, type){
-	console.log()
+function change_select(split, name, type, value){
+	//console.log($('#'+name).parent());
+	//console.log($('[name="'+name+'"]').parent());
+	//console.log()
 	if( type == 'select'){
 		$(document).on('change', '[name="'+split[0]+'"]', function() {
 			if($(this).val() == split[1]){
-				console.log('sama');
+				//console.log('sama');
 				$('[name="'+name+'"]').parent().removeClass('hidding');
 				$('[name="'+name+'"]').parent().addClass('displayed');
 			}else{
@@ -860,14 +1024,23 @@ function change_select(split, name, type){
 			}
 		});
 	}else if( type  == 'toogle'){
+		//console.log(value);
+/* 		if(value == 'on'){
+			//console.log(value);
+			//console.log($('[name="'+name+'"]'));
+			$('[name="'+name+'"]').parent().removeClass('hidding');
+			$('[name="'+name+'"]').parent().addClass('displayed');			
+		} */
 		$(document).on('change', '[name="'+split[0]+'"]', function() {
 			if(this.checked) {
-				console.log('sama');
+				//console.log('sama');
+				//console.log($('[name="'+name+'"]').parent());
 				$('[name="'+name+'"]').parent().removeClass('hidding');
 				$('[name="'+name+'"]').parent().addClass('displayed');
 			}else{
 				$('[name="'+name+'"]').parent().removeClass('displayed');
 				$('[name="'+name+'"]').parent().addClass('hidding');
+				//$('[name="'+name+'"]').val('');
 			}
 		});		
 	}
@@ -968,7 +1141,7 @@ function generate_table(datatable){
 	console.log('generate table start');
 	//console.log(datatable);
 	var html = '';
-	html += '<div class="table-responsive">';
+	html += '<div class="table-responsive '+set_fixed_table(the_data.data.classes)+'">';
 	html += '<table class="table'+table_classes(the_data.data.classes)+'">';
 	html += '<thead>';
 	html += set_table_header(datatable.header);
@@ -983,6 +1156,26 @@ function generate_table(datatable){
 	html += '</div>';
 	console.log('generate table finished');
 	return html;
+}
+
+function set_fixed_table(value){
+	var returnvalue = ''
+	if(value.includes("fixed-") == true){
+		var array_split = value.split(" ");
+		array_split.forEach(function(item) {
+			if(item.includes("fixed-")){
+				var i;
+				var item_split = item.substr(6).split('-');
+				console.log(item_split[0]);
+				console.log($('.table-fixing'));
+				$('.table-fixing').height(item_split[0]);
+			}
+		});
+		returnvalue = 'table-fixing'
+	}else{
+		returnvalue = '';
+	}
+	return returnvalue;
 }
 
 function set_table_header(header){
@@ -1048,17 +1241,17 @@ function set_table_body(body){
 			}					
 			if(the_data.data.editable == true){
 				html += '<td class="text-center font-weight-bold">';
-				html += '<a class="item-edit" id="'+body[i][0].value+'" href="javascript:void(0);" title="edit"><i style="font-size: 16px;" class="fas fa-edit"></i></a>';
+				html += '<a class="item-edit" id="'+body[i][0].value+'" href="javascript:void(0);" title="edit"><i style="font-size: 16px;" class="fa fa-edit"></i></a>';
 				html += '</td>';
 			}
 			if(the_data.data.deletable == true){
 				html += '<td class="text-center font-weight-bold">';
-				html += '<a class="item-delete" id="'+body[i][0].value+'" href="javascript:void(0);" title="delete"><i style="font-size: 16px;" class="fas fa-trash"></i></a>';
+				html += '<a class="item-delete" id="'+body[i][0].value+'" href="javascript:void(0);" title="delete"><i style="font-size: 16px;" class="fa fa-trash"></i></a>';
 				html += '</td>';
 			}
 			if(the_data.data.detailable == true){
 				html += '<td class="text-center font-weight-bold">';
-				html += '<a class="item-detail" id="'+body[i][0].value+'" href="javascript:void(0);" title="detail"><i style="font-size: 16px;" class="fas fa-info"></i></a>';
+				html += '<a class="item-detail" id="'+body[i][0].value+'" href="javascript:void(0);" title="detail"><i style="font-size: 16px;" class="fa fa-info"></i></a>';
 				html += '</td>';
 			}			
 		}					
@@ -1115,7 +1308,8 @@ function text_classes(value){
 	var fontweight;
 	var fontitalic;
 	var texttransform;
-	var textalign;	
+	var textalign;
+	var textcolor;
 	
 	if(value.includes("bold") == true){
 		fontweight= 'font-weight-bold';
@@ -1152,7 +1346,19 @@ function text_classes(value){
 	}else{
 		textalign= 'text-left';
 	}
+	
+	if(value.includes("warning") == true){
+		textcolor= 'text-warning';
+	}else if(value.includes("info") == true){
+		textcolor= 'text-info';
+	}else if(value.includes("danger") == true){
+		textcolor= 'text-danger';
+	}else if(value.includes("success") == true){
+		textcolor= 'text-success';
+	}else if(value.includes("primary") == true){
+		textcolor= 'text-primary';
+	}	
 
-	return (fontweight+ ' ' + fontitalic + ' ' + texttransform + ' ' + textalign);
+	return (fontweight+ ' ' + fontitalic + ' ' + texttransform + ' ' + textalign + ' ' + textcolor);
 }
 

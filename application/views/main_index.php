@@ -276,12 +276,19 @@
           </div>
         </div>
         <!-- /page content -->
-		
+<div class="modalSpinner"><!-- Place at bottom of page --></div>		
 <script src="<?php echo base_url(); ?>assets/js/general.js"></script>
 <script>
 $(document).ready(function(){
 	initiation('<?php echo site_url($class); ?>')
 	//get_data('<?php echo site_url($class).'/list'; ?>');	
+	
+});
+$body = $("body");
+
+$(document).on({
+    ajaxStart: function() { $body.addClass("loading");    },
+     ajaxStop: function() { $body.removeClass("loading"); }    
 });
 </script>
 

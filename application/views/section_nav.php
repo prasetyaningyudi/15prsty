@@ -17,7 +17,7 @@
 					<?php if ($notes != ''): ?>
 						<?php echo $notes; ?>
 					<?php else: ?> 
-						d..... - .....b
+						
 					<?php endif; ?>				
 				</div>	
               <ul class="nav navbar-nav navbar-right">

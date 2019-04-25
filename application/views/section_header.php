@@ -46,6 +46,14 @@
     <link href="<?php echo base_url(); ?>assets/vendors/bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" rel="stylesheet">
     <!-- Animate.css -->
     <link href="<?php echo base_url(); ?>assets/vendors/animate.css/animate.min.css" rel="stylesheet">	
+	
+   <!-- <link href="<?php echo base_url(); ?>assets/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo base_url(); ?>assets/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo base_url(); ?>assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo base_url(); ?>assets/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo base_url(); ?>assets/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo base_url(); ?>assets/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">	-->
+	
     <!-- Custom Theme Style -->
     <link href="<?php echo base_url(); ?>assets/css/custom.css" rel="stylesheet">
     <link href="<?php echo base_url(); ?>assets/css/style.css" rel="stylesheet">
@@ -55,7 +63,7 @@
     <!-- Bootstrap -->
     <script src="<?php echo base_url(); ?>assets/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 	<style>
-		button-add, .button-pdf, .button-xls, .button-filter, .button-filter1, .button-filter2,	.tab-filter-first, .tab-two-content, .main-table{
+		.button-add, .button-pdf, .button-xls, .button-filter, .button-filter1, .button-filter2,	.tab-filter-first, .tab-two-content, .main-table{
 			display:none;
 		}
 	</style>
